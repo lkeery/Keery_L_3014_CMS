@@ -1,3 +1,5 @@
+/* Home */
+
 .logo {
     max-height: 50px;
 }
@@ -28,5 +30,31 @@
 }
 
 .card-deck {
+    margin-bottom: 36px;
+    margin-top: 36px;
+}
+
+/* Admin Login */
+
+.signin {
+    margin: 0 auto;
+    background-color: #ffffff;
+    margin-top: 16px;
+    padding: 36px;
+}
+
+.logo-section {
+    margin-top: 60px;
+}
+
+.login-hr {
+    width: 50%;
+    margin-top: 16px;
     margin-bottom: 16px;
+}
+
+.alert {
+    margin: 0 auto;
+    margin-top: 16px;
+    text-align: center;
 }
