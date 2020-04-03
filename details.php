@@ -3,18 +3,6 @@ require_once 'load.php';
 
 if(isset($_GET['id'])) {
     $id = $_GET['id'];
-    $tbl = 'tbl_movies';
-    $col = 'movies_id';
-    $getMovie = getSingleProduct($tbl, $col, $id);
-}
-
-?>
-
-<?php
-require_once 'load.php';
-
-if(isset($_GET['id'])) {
-    $id = $_GET['id'];
     $tbl = 'tbl_products';
     $col = 'product_ID';
     $getProduct = getSingleProduct($tbl, $col, $id);
@@ -41,9 +29,9 @@ if(isset($_GET['id'])) {
             <a class="navbar-brand" href="#">
                 <img class="logo" src="images/logo.svg" alt="Sportchek">
             </a>
-            <form class="form-inline col-sm-4" id="search-form" method="post" action="search.php?go">
+            <form class="form-inline col-sm-4" id="search-form" method="get" action="search.php">
                 <input class="form-control mr-sm-2" type="search"
-                    placeholder="Search" aria-label="Search">
+                    placeholder="Search" aria-label="Search" name="search" autocomplete="off">
                 <button class="btn btn-danger my-2 my-sm-0 col-sm-4"
                     type="submit">Search</button>
             </form>
