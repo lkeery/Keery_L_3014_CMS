@@ -1,0 +1,37 @@
+/* Home */
+
+.logo {
+    max-height: 50px;
+}
+
+.bottom-nav {
+    a:active {
+        border-bottom: 3px solid red !important;
+        margin-bottom: 0;
+    }
+}
+
+.bottom-nav {
+    text-transform: uppercase;
+}
+
+.filters {
+    padding-top: 36px;
+}
+
+.products {
+    margin-top: 36px;
+}
+
+.form-check {
+    margin-bottom: 8px;
+}
+
+#category {
+    margin-bottom: 16px;
+}
+
+.card-deck {
+    margin-bottom: 36px;
+    margin-top: 36px;
+}

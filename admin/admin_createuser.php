@@ -16,7 +16,7 @@ if(isset($_POST['submit'])){
 }
 ?>
 
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,7 +25,6 @@ if(isset($_POST['submit'])){
 </head>
 <body>
     <h2>Create User</h2>
-    <?php echo !empty($message) ? $message : ''; ?>
 
     <form action="admin_createuser.php" method="post">
         <label for="fname">First Name:</label>
@@ -42,4 +41,4 @@ if(isset($_POST['submit'])){
         <button name="submit">Create User</button>
     </form>
 </body>
-</html>
+</html> -->

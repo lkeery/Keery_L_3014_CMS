@@ -12,7 +12,7 @@ function getAll($tbl){
     }
 }
 
-function getSingleMovie($tbl, $col, $id) {
+function getSingleProduct($tbl, $col, $id) {
     $pdo = Database::getInstance()->getConnection();
     $query = "SELECT * FROM $tbl WHERE $col = $id";
     $results = $pdo->query($query);
@@ -24,7 +24,7 @@ function getSingleMovie($tbl, $col, $id) {
     }
 }
 
-function getMoviesByFilter($args) {
+function getProductsByFilter($args) {
     $pdo = Database::getInstance()->getConnection();
 
     $filterQuery = 'SELECT * FROM '.$args['tbl'].' AS t, '.$args['tbl2'].' AS t2, '.$args['tbl3'].' AS t3';

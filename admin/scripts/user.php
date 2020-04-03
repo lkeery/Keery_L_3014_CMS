@@ -17,7 +17,7 @@ function createUser($fname, $username, $password, $email){
     );
 
     if($create_user_result){
-        redirect_to('index.php');
+        redirect_to('users.php');
     }else{
         return 'There was an error creating the user.';
     }
@@ -92,7 +92,7 @@ function deleteUser($user_id) {
 
 
     if($delete_user_result && $delete_user_set->rowCount() > 0){
-        redirect_to('admin_deleteuser.php');
+        redirect_to('users.php');
     } else {
         return false;
     }

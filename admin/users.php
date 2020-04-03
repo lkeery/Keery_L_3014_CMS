@@ -2,6 +2,12 @@
 require_once '../load.php';
 confirm_logged_in();
 
+$displayUsers = showAllUsers();
+
+if (!$displayUsers) {
+    $message = 'Failed to get list of users.';
+}
+
 $id = $_SESSION['user_id'];
 $user = getSingleUser($id);
 
@@ -17,12 +23,6 @@ if(isset($_POST['submit'])){
 
     $message = editUser($fname, $username, $password, $email, $id);
 }
-
-$category_tbl = 'tbl_category';
-$category = getAll($category_tbl);
-
-$products_table = 'tbl_products';
-$getProducts = getAll($products_table);
 
 ?>
 
@@ -42,73 +42,7 @@ $getProducts = getAll($products_table);
 </head>
 <body>
 
-<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add New Product</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      <?php echo !empty($message) ? $message : ''; ?>
-   <form action="admin_addproduct.php" method="POST" enctype="multipart/form-data">
-
-   <div class="form-group">
-   <div class="custom-file">
-    <input type="file" id="upload" class="custom-file-input" name="image" value="">
-    <label class="custom-file-label" for="image">Upload Product Image</label>
-    </div>
-</div>
-
-    <div class="form-group">
-    <label for="title">Product Name:</label>
-    <input class="form-control" type="text" name="title" value="">
-    </div>
-
-    <div class="form-group">
-    <label for="size">Product Size:</label>
-    <input class="form-control" type="text" name="size" value="">
-    </div>
-
-    <div class="form-group">
-    <label for="color">Product Color:</label>
-    <input class="form-control" type="text" name="color" value="">
-    </div>
-
-    <div class="form-group">
-    <label for="price">Product Price:</label>
-    <input class="form-control" type="text" name="price" value="">
-    </div>
-
-    <div class="form-group">
-    <label for="description">Product Description:</label>
-    <textarea class="form-control" name="description"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label for="category">Product Category:</label>
-    <select class="form-control" name="category">
-        <option>Select Category</option>
-        <?php while ($row = $category->fetch(PDO::FETCH_ASSOC)): ?>
-            <option value="<?php echo $row['category_ID'] ?>"><?php echo $row['category_name']; ?></option>
-        <?php endwhile;?>
-    </select>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="submit" name="submit" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Product</button>
-      </div>
-        </form>
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal" aria-hidden="true">
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -154,6 +88,49 @@ $getProducts = getAll($products_table);
   </div>
 </div>
 
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add New User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <?php echo !empty($message) ? $message : ''; ?>
+
+<form action="admin_createuser.php" method="post">
+    <div class="form-group">
+    <label for="fname">First Name:</label>
+    <input class="form-control" type="text" name="fname" value="">
+    </div>
+
+    <div class="form-group">
+    <label for="username">Username:</label>
+    <input class="form-control" type="text" name="username" value="">
+</div>
+
+<div class="form-group">
+    <label for="password">Password:</label>
+    <input class="form-control" type="text" name="password" value="">
+</div>
+
+    <div class="form-group">
+    <label for="email">Email:</label>
+    <input class="form-control" type="email" name="email" value="">
+</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button name="submit" class="btn btn-success"><i class="fas fa-plus-circle"></i> Create User</button>
+      </div>
+</form>
+    </div>
+  </div>
+</div>
+
+
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <a class="navbar-brand" href="#"><img src="../images/logo.svg" alt="Logo" class="dash-logo"></a>
@@ -167,7 +144,7 @@ $getProducts = getAll($products_table);
         <i class="fas fa-user"></i>&nbsp;&nbsp;<?php echo $_SESSION['user_name']; ?>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" data-toggle="modal" data-target="#editUserModal">Edit Account</a>
+        <a class="dropdown-item" data-toggle="modal" data-target="#editUserModal">Edit Account</a>
           <a class="dropdown-item" href="admin_logout.php">Sign Out</a>
         </div>
       </li>
@@ -188,13 +165,13 @@ $getProducts = getAll($products_table);
             <hr>
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link dash-active" href="index.php">
-                  <i class="fas fa-box-open"></i> Manage Products <span class="sr-only">(current)</span>
+                <a class="nav-link" href="index.php">
+                  <i class="fas fa-box-open"></i> Manage Products
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="users.php">
-                  <i class="fas fa-users-cog"></i> Manage Users
+                <a class="nav-link dash-active" href="users.php">
+                  <i class="fas fa-users-cog"></i> Manage Users <span class="sr-only">(current)</span>
                 </a>
               </li>
             </ul>
@@ -204,45 +181,35 @@ $getProducts = getAll($products_table);
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-            <h1 class="h2">Products</h1>
+            <h1 class="h2">Users</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
-          <button type="button" class="btn btn-sm btn btn-success" data-toggle="modal" data-target="#addProductModal">
-          <i class="fas fa-plus-circle"></i> Add Product
-      </button>
+          <button type="button" data-toggle="modal" data-target="#addUserModal" class="btn btn-sm btn btn-success">
+          <i class="fas fa-plus-circle"></i> Add User
+</button>
+
+
         </div>
           </div>
-          <div class="table-responsive-lg" style="overflow-x:auto;">
-            <table class="table table-striped table-sm table-bordered">
-              <thead class="thead-light">
+          <div class="table-responsive">
+            <table class="table table-striped table-sm">
+              <thead>
                 <tr>
-                  <th class="text-center">ID</th>
-                  <th>Image</th>
-                  <th width="250">Name</th>
-                  <th class="text-center">Size</th>
-                  <th class="text-center">Color</th>
-                  <th class="text-center">Price</th>
-                  <th width="300">Description</th>
-                  <th class="text-center">Action</th>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-              <?php while($row = $getProducts->fetch(PDO::FETCH_ASSOC)):?>
-                <tr>
-                  <td class="align-middle text-center"><?php echo $row['product_ID'];?></td>
-                  <td class="align-middle"><?php echo $row['image'];?></td>
-                  <td class="align-middle"><?php echo $row['name'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['size'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['color'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['price'];?></td>
-                  <td class="align-middle"><?php echo substr($row['description'], 0, 70);?> <b>...</b></td>
-                  <td class="align-middle text-center">
-                    <div class="btn-group" role="group">  
-                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="admin_deleteproduct.php?id=<?php echo $row['product_ID'];?>" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
-                  </div>
-                  </td>    
-                </tr>
-                <?php endwhile;?>
+              <?php while ($row = $displayUsers->fetch(PDO::FETCH_ASSOC)): ?>
+    <tr>
+        <td class="align-middle"><?php echo $row['user_id']; ?></td>
+        <td class="align-middle"><?php echo $row['user_name']; ?></td>
+        <td class="align-middle"><?php echo $row['user_email']; ?></td>
+        <td class="align-middle">
+            <?php echo '<a href="admin_deleteuser.php?id=' . $row['user_id'] . '" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Delete User</a>' ?></td>
+    </tr>
+    <?php endwhile;?>
               </tbody>
             </table>
           </div>
