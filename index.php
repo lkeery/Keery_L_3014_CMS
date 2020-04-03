@@ -18,6 +18,12 @@ if (isset($_GET['filter'])) {
     $getProducts = getAll($products_table);
 }
 
+if(isset($_GET['keywords'])) {
+    $keywords = $_GET['keywords'];
+
+    $getProducts = getProductsBySearch($keywords);
+}
+
 $number_cols = 3; //Number of columns for large screens
 $col_width = 12 / $number_cols; //12 column layout
 $row_count = 0; //The loop counter
@@ -42,9 +48,9 @@ $row_count = 0; //The loop counter
             <a class="navbar-brand" href="#">
                 <img class="logo" src="images/logo.svg" alt="Sportchek">
             </a>
-            <form class="form-inline col-sm-4" id="search-form" method="post" action="search.php?go">
+            <form class="form-inline col-sm-4" id="search-form" method="GET">
                 <input class="form-control mr-sm-2" type="search"
-                    placeholder="Search" aria-label="Search">
+                    placeholder="Search" aria-label="Search" name="keywords">
                 <button class="btn btn-danger my-2 my-sm-0 col-sm-4"
                     type="submit">Search</button>
             </form>
