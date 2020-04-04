@@ -5,11 +5,11 @@ confirm_logged_in();
 $id = $_SESSION['user_id'];
 $user = getSingleUser($id);
 
-if(is_string($user)){
+if (is_string($user)) {
     $message = $user;
 }
 
-if(isset($_POST['submit'])){
+if (isset($_POST['submit'])) {
     $fname = trim($_POST['fname']);
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -57,39 +57,39 @@ $getProducts = getAll($products_table);
 
    <div class="form-group">
    <div class="custom-file">
-    <input type="file" id="upload" class="custom-file-input" name="image" value="">
+    <input type="file" id="upload" class="custom-file-input" name="image" value="" required>
     <label class="custom-file-label" for="image">Upload Product Image</label>
     </div>
 </div>
 
     <div class="form-group">
     <label for="title">Product Name:</label>
-    <input class="form-control" type="text" name="title" value="">
+    <input class="form-control" type="text" name="title" value="" required>
     </div>
 
     <div class="form-group">
     <label for="size">Product Size:</label>
-    <input class="form-control" type="text" name="size" value="">
+    <input class="form-control" type="text" name="size" value="" required>
     </div>
 
     <div class="form-group">
     <label for="color">Product Color:</label>
-    <input class="form-control" type="text" name="color" value="">
+    <input class="form-control" type="text" name="color" value="" required>
     </div>
 
     <div class="form-group">
     <label for="price">Product Price:</label>
-    <input class="form-control" type="text" name="price" value="">
+    <input class="form-control" type="text" name="price" value="" required>
     </div>
 
     <div class="form-group">
     <label for="description">Product Description:</label>
-    <textarea class="form-control" name="description"></textarea>
+    <textarea class="form-control" name="description" required></textarea>
     </div>
 
     <div class="form-group">
       <label for="category">Product Category:</label>
-    <select class="form-control" name="category">
+    <select class="form-control" name="category" required>
         <option>Select Category</option>
         <?php while ($row = $category->fetch(PDO::FETCH_ASSOC)): ?>
             <option value="<?php echo $row['category_ID'] ?>"><?php echo $row['category_name']; ?></option>
@@ -100,7 +100,7 @@ $getProducts = getAll($products_table);
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="submit" name="submit" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Product</button>
+        <button type="submit" name="add" class="btn btn-success"><i class="fas fa-plus-circle"></i> Add Product</button>
       </div>
         </form>
     </div>
@@ -121,27 +121,27 @@ $getProducts = getAll($products_table);
       <?php echo !empty($message) ? $message : ''; ?>
 
       <form action="admin_edituser.php" method="post">
-        
-      <?php while($info = $user->fetch(PDO::FETCH_ASSOC)): ?>
+
+      <?php while ($info = $user->fetch(PDO::FETCH_ASSOC)): ?>
 
         <div class="form-group">
         <label for="fname">First Name:</label>
-        <input class="form-control" type="text" name="fname" value="<?php echo $info['user_fname'];?>">
+        <input class="form-control" type="text" name="fname" value="<?php echo $info['user_fname']; ?>">
         </div>
 
         <div class="form-group">
         <label for="username">Username:</label>
-        <input class="form-control" type="text" name="username" value="<?php echo $info['user_name'];?>">
+        <input class="form-control" type="text" name="username" value="<?php echo $info['user_name']; ?>">
         </div>
 
       <div class="form-group">
         <label for="password">Password:</label>
-        <input class="form-control" type="text" name="password" value="<?php echo $info['user_pass'];?>">
+        <input class="form-control" type="text" name="password" value="<?php echo $info['user_pass']; ?>">
       </div>
 
       <div class="form-group">
         <label for="email">Email:</label>
-        <input class="form-control" type="text" name="email" value="<?php echo $info['user_email'];?>">
+        <input class="form-control" type="text" name="email" value="<?php echo $info['user_email']; ?>">
       </div>
         <?php endwhile;?>
       </div>
@@ -226,21 +226,22 @@ $getProducts = getAll($products_table);
                 </tr>
               </thead>
               <tbody>
-              <?php while($row = $getProducts->fetch(PDO::FETCH_ASSOC)):?>
+              <?php while ($row = $getProducts->fetch(PDO::FETCH_ASSOC)): ?>
+                <?php echo !empty($message) ? $message : '' ?>
                 <tr>
-                  <td class="align-middle text-center"><?php echo $row['product_ID'];?></td>
-                  <td class="align-middle"><?php echo $row['image'];?></td>
-                  <td class="align-middle"><?php echo $row['name'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['size'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['color'];?></td>
-                  <td class="align-middle text-center"><?php echo $row['price'];?></td>
-                  <td class="align-middle"><?php echo substr($row['description'], 0, 70);?> <b>...</b></td>
+                  <td class="align-middle text-center"><?php echo $row['product_ID']; ?></td>
+                  <td class="align-middle"><?php echo $row['image']; ?></td>
+                  <td class="align-middle"><?php echo $row['name']; ?></td>
+                  <td class="align-middle text-center"><?php echo $row['size']; ?></td>
+                  <td class="align-middle text-center"><?php echo $row['color']; ?></td>
+                  <td class="align-middle text-center"><?php echo $row['price']; ?></td>
+                  <td class="align-middle"><?php echo substr($row['description'], 0, 70); ?> <b>...</b></td>
                   <td class="align-middle text-center">
-                    <div class="btn-group" role="group">  
-                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="admin_deleteproduct.php?id=<?php echo $row['product_ID'];?>" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
+                    <div class="btn-group" role="group">
+                    <a href="admin_editproduct.php?id=<?php echo $row['product_ID']; ?>" class="btn btn-sm btn-primary edit"><i class="fas fa-edit"></i></a>
+                    <a href="admin_deleteproduct.php?id=<?php echo $row['product_ID']; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
                   </div>
-                  </td>    
+                  </td>
                 </tr>
                 <?php endwhile;?>
               </tbody>
@@ -250,12 +251,7 @@ $getProducts = getAll($products_table);
       </div>
     </div>
 
-    <?php echo !empty($message) ? $message : '' ?>
 
-    <!-- <a href="admin_createuser.php">Create User</a>
-    <a href="admin_edituser.php">Edit User</a>
-    <a href="admin_deleteuser.php">Delete User</a>
-    <a href="admin_addmovie.php">Add Movie</a> -->
 
     <!-- Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

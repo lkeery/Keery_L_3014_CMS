@@ -19,36 +19,3 @@ if(isset($_GET['id'])){
 }
 
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete User</title>
-</head>
-<body>
-    <h2>Delete Users</h2>
-
-    <table>
-    <thead>
-    <tr>
-    <th>User ID</th>
-    <th>Username</th>
-    <th>User Email</th>
-    <th>Action</th>
-    </tr>   
-    </thead>
-    <tbody>
-    <?php while($row = $displayUsers->fetch(PDO::FETCH_ASSOC)):?>
-    <tr>
-        <td><?php echo $row['user_id'];?></td>
-        <td><?php echo $row['user_name'];?></td>
-        <td><?php echo $row['user_email'];?></td>
-        <td><?php echo '<a href="admin_deleteuser.php?id='.$row['user_id'].'">Delete User</a>'?></td>
-    </tr>
-    <?php endwhile;?>
-    </tbody>
-</table>
-</body>
-</html>

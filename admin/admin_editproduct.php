@@ -2,20 +2,14 @@
 require_once '../load.php';
 confirm_logged_in();
 
-$displayUsers = showAllUsers();
-
-if (!$displayUsers) {
-    $message = 'Failed to get list of users.';
-}
-
 $id = $_SESSION['user_id'];
 $user = getSingleUser($id);
 
-if(is_string($user)){
+if (is_string($user)) {
     $message = $user;
 }
 
-if(isset($_POST['submit'])){
+if (isset($_POST['submit'])) {
     $fname = trim($_POST['fname']);
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
@@ -23,6 +17,33 @@ if(isset($_POST['submit'])){
 
     $message = editUser($fname, $username, $password, $email, $id);
 }
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $tbl = 'tbl_products';
+    $col = 'product_ID';
+    $getProduct = getSingleProduct($tbl, $col, $id);
+
+    if (isset($_POST['save'])) {
+        $product = array(
+            'id' => $id,
+            'image' => $_FILES['image'],
+            'title' => $_POST['title'],
+            'size' => $_POST['size'],
+            'color' => $_POST['color'],
+            'price' => $_POST['price'],
+            'description' => $_POST['description'],
+            'category' => $_POST['category'],
+        );
+
+        $result = editProduct($product);
+
+        $message = $result;
+    }
+}
+
+$category_tbl = 'tbl_category';
+$category = getAll($category_tbl);
 
 ?>
 
@@ -42,7 +63,7 @@ if(isset($_POST['submit'])){
 </head>
 <body>
 
-<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -54,28 +75,28 @@ if(isset($_POST['submit'])){
       <div class="modal-body">
       <?php echo !empty($message) ? $message : ''; ?>
 
-      <form action="admin_edituser.php" method="post">
-        
-      <?php while($info = $user->fetch(PDO::FETCH_ASSOC)): ?>
+      <form action="admin_edituser.php?id=<?php echo $id ?>" method="post">
+
+      <?php while ($info = $user->fetch(PDO::FETCH_ASSOC)): ?>
 
         <div class="form-group">
         <label for="fname">First Name:</label>
-        <input class="form-control" type="text" name="fname" value="<?php echo $info['user_fname'];?>">
+        <input class="form-control" type="text" name="fname" value="<?php echo $info['user_fname']; ?>">
         </div>
 
         <div class="form-group">
         <label for="username">Username:</label>
-        <input class="form-control" type="text" name="username" value="<?php echo $info['user_name'];?>">
+        <input class="form-control" type="text" name="username" value="<?php echo $info['user_name']; ?>">
         </div>
 
       <div class="form-group">
         <label for="password">Password:</label>
-        <input class="form-control" type="text" name="password" value="<?php echo $info['user_pass'];?>">
+        <input class="form-control" type="text" name="password" value="<?php echo $info['user_pass']; ?>">
       </div>
 
       <div class="form-group">
         <label for="email">Email:</label>
-        <input class="form-control" type="text" name="email" value="<?php echo $info['user_email'];?>">
+        <input class="form-control" type="text" name="email" value="<?php echo $info['user_email']; ?>">
       </div>
         <?php endwhile;?>
       </div>
@@ -87,49 +108,6 @@ if(isset($_POST['submit'])){
     </div>
   </div>
 </div>
-
-<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add New User</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      <?php echo !empty($message) ? $message : ''; ?>
-
-<form action="admin_createuser.php" method="post">
-    <div class="form-group">
-    <label for="fname">First Name:</label>
-    <input class="form-control" type="text" name="fname" value="" required>
-    </div>
-
-    <div class="form-group">
-    <label for="username">Username:</label>
-    <input class="form-control" type="text" name="username" value="" required>
-</div>
-
-<div class="form-group">
-    <label for="password">Password:</label>
-    <input class="form-control" type="text" name="password" value="" required>
-</div>
-
-    <div class="form-group">
-    <label for="email">Email:</label>
-    <input class="form-control" type="email" name="email" value="" required>
-</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button name="submit" class="btn btn-success"><i class="fas fa-plus-circle"></i> Create User</button>
-      </div>
-</form>
-    </div>
-  </div>
-</div>
-
 
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
@@ -144,7 +122,7 @@ if(isset($_POST['submit'])){
         <i class="fas fa-user"></i>&nbsp;&nbsp;<?php echo $_SESSION['user_name']; ?>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" data-toggle="modal" data-target="#editUserModal">Edit Account</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#editUserModal">Edit Account</a>
           <a class="dropdown-item" href="admin_logout.php">Sign Out</a>
         </div>
       </li>
@@ -165,13 +143,13 @@ if(isset($_POST['submit'])){
             <hr>
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="index.php">
-                  <i class="fas fa-box-open"></i> Manage Products
+                <a class="nav-link dash-active" href="index.php">
+                  <i class="fas fa-box-open"></i> Manage Products <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link dash-active" href="users.php">
-                  <i class="fas fa-users-cog"></i> Manage Users <span class="sr-only">(current)</span>
+                <a class="nav-link" href="users.php">
+                  <i class="fas fa-users-cog"></i> Manage Users
                 </a>
               </li>
             </ul>
@@ -180,49 +158,67 @@ if(isset($_POST['submit'])){
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-            <h1 class="h2">Users</h1>
-            <div class="btn-toolbar mb-2 mb-md-0">
-          <button type="button" data-toggle="modal" data-target="#addUserModal" class="btn btn-sm btn btn-success">
-          <i class="fas fa-plus-circle"></i> Add User
-</button>
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+            <h1 class="h2">Edit Product</h1>
+          </div>
+          <?php echo !empty($message) ? $message : ''; ?>
+   <form action="admin_editproduct.php?id=<?php echo $id ?>" method="POST" enctype="multipart/form-data">
 
+   <?php while ($info = $getProduct->fetch(PDO::FETCH_ASSOC)): ?>
 
+   <div class="form-group">
+   <div class="custom-file">
+    <input type="file" id="upload" class="custom-file-input" name="image" value="">
+    <label class="custom-file-label" for="image"><?php echo $info['image']; ?></label>
+    </div>
+</div>
+
+    <div class="form-group">
+    <label for="title">Product Name:</label>
+    <input class="form-control" type="text" name="title" value="<?php echo $info['name']; ?>">
+    </div>
+
+    <div class="form-group">
+    <label for="size">Product Size:</label>
+    <input class="form-control" type="text" name="size" value="<?php echo $info['size']; ?>">
+    </div>
+
+    <div class="form-group">
+    <label for="color">Product Color:</label>
+    <input class="form-control" type="text" name="color" value="<?php echo $info['color']; ?>">
+    </div>
+
+    <div class="form-group">
+    <label for="price">Product Price:</label>
+    <input class="form-control" type="text" name="price" value="<?php echo $info['price']; ?>">
+    </div>
+
+    <div class="form-group">
+    <label for="description">Product Description:</label>
+    <textarea class="form-control" name="description"><?php echo $info['description']; ?></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Product Category:</label>
+    <select class="form-control" name="category" required>
+        <option>Select Category</option>
+        <?php while ($row = $category->fetch(PDO::FETCH_ASSOC)): ?>
+            <option value="<?php echo $row['category_ID'] ?>"><?php echo $row['category_name']; ?></option>
+        <?php endwhile;?>
+    </select>
         </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-striped table-sm table-bordered">
-              <thead class="thead-light">
-                <tr>
-                  <th class="text-center">ID</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              <?php while ($row = $displayUsers->fetch(PDO::FETCH_ASSOC)): ?>
-    <tr>
-        <td class="align-middle text-center"><?php echo $row['user_id']; ?></td>
-        <td class="align-middle"><?php echo $row['user_name']; ?></td>
-        <td class="align-middle"><?php echo $row['user_email']; ?></td>
-        <td class="align-middle">
-            <?php echo '<a href="admin_deleteuser.php?id=' . $row['user_id'] . '" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i> Delete User</a>' ?></td>
-    </tr>
-    <?php endwhile;?>
-              </tbody>
-            </table>
-          </div>
+        <div class="form-group">
+        <a href="index.php" class="btn btn-secondary">Cancel</a>
+        <button type="submit" name="save" class="btn btn-success">Save changes</button>
+        </div>
+        </div>
+        <?php endwhile;?>
+        </form>
         </main>
       </div>
     </div>
 
-    <?php echo !empty($message) ? $message : '' ?>
 
-    <!-- <a href="admin_createuser.php">Create User</a>
-    <a href="admin_edituser.php">Edit User</a>
-    <a href="admin_deleteuser.php">Delete User</a>
-    <a href="admin_addmovie.php">Add Movie</a> -->
 
     <!-- Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

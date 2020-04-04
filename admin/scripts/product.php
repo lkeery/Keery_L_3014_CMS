@@ -40,14 +40,14 @@ function addProduct($product)
 
         $last_uploaded_id = $pdo->lastInsertId();
 
-        if($insert_product_result && !empty($last_uploaded_id)){
+        if ($insert_product_result && !empty($last_uploaded_id)) {
             $update_category_query = 'INSERT INTO tbl_products_category(category_ID, product_ID) VALUES(:category_id, :product_id)';
             $update_category = $pdo->prepare($update_category_query);
 
             $update_category_result = $update_category->execute(
                 array(
-                    ':product_id'=>$last_uploaded_id,
-                    ':category_id'=>$product['category'],
+                    ':product_id' => $last_uploaded_id,
+                    ':category_id' => $product['category'],
                 )
             );
         }
@@ -61,22 +61,66 @@ function addProduct($product)
 
 }
 
-function deleteProduct($product_id) {
+function deleteProduct($product_id)
+{
     $pdo = Database::getInstance()->getConnection();
 
     $delete_product_query = 'DELETE FROM tbl_products WHERE product_ID = :id';
-    $delete_product_set= $pdo->prepare($delete_product_query);
+    $delete_product_set = $pdo->prepare($delete_product_query);
     $delete_product_result = $delete_product_set->execute(
-                array(
-                    ':id'=>$product_id
-                )
-            );
+        array(
+            ':id' => $product_id,
+        )
+    );
 
-
-    if($delete_product_result && $delete_product_set->rowCount() > 0){
+    if ($delete_product_result && $delete_product_set->rowCount() > 0) {
         redirect_to('index.php');
     } else {
         return false;
+    }
+
+}
+
+function editProduct($product)
+{
+
+    try {
+        $pdo = Database::getInstance()->getConnection();
+
+        $update_product_query = 'UPDATE tbl_products SET name = :name, size = :size, color = :color, price = :price, description = :description, image = :image WHERE product_ID = :id';
+
+        $update_set = $pdo->prepare($update_product_query);
+        $update_product_result = $update_set->execute(
+        array(
+            ':id' => $product['id'],
+            ':name' => $product['title'],
+            ':size' => $product['size'],
+            ':color' => $product['color'],
+            ':price' => $product['price'],
+            ':description' => $product['description'],
+            ':image' => $product['image'],
+        )
+        );
+
+        $this_product_id = $product['id'];
+
+        if ($update_product_result && !empty($this_product_id)) {
+            $update_category_query = 'UPDATE tbl_products_category SET category_ID = :category_id WHERE product_ID = :product_id';
+            $update_category = $pdo->prepare($update_category_query);
+
+            $update_category_result = $update_category->execute(
+                array(
+                    ':product_id' => $this_product_id,
+                    ':category_id' => $product['category'],
+                )
+            );
+        }
+
+        redirect_to('index.php');
+
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        return $error;
     }
 
 }
