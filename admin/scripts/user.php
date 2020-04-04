@@ -60,7 +60,7 @@ function editUser($fname, $username, $password, $email, $id) {
 
     // if everything goes well, redirect to index.php, otherwise show error message
     if($update_user_result){
-        redirect_to('index.php');
+        redirect_to('users.php');
     }else{
         return 'There was an error editing the user.';
     }

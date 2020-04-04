@@ -2,7 +2,7 @@
 require_once '../load.php';
 confirm_logged_in();
 
-if (isset($_POST['submit'])) {
+if (isset($_POST['add'])) {
     $product = array(
         'image' => $_FILES['image'],
         'title' => $_POST['title'],
